@@ -20,6 +20,8 @@ import timeit
 from logging import DEBUG, INFO
 from typing import Dict, List, Optional, Tuple, Union
 
+import time
+
 from flwr.common import (
     Code,
     DisconnectRes,
@@ -354,6 +356,10 @@ def fit_client(
 ) -> Tuple[ClientProxy, FitRes]:
     """Refine parameters on a single client."""
     fit_res = client.fit(ins, timeout=timeout)
+
+    # NOTE(ozr): added by ozr 
+    # For accurate upload time measurement.
+    fit_res.metrics['recv_time'] = time.perf_counter()
     return client, fit_res
 
 
@@ -371,7 +377,7 @@ def _handle_finished_future_after_fit(
 
     # Successfully received a result from a client
     result: Tuple[ClientProxy, FitRes] = future.result()
-    _, res = result
+    _, res, recv_timestamp = result
 
     # Check result status code
     if res.status.code == Code.OK:
