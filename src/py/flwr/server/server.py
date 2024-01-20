@@ -377,7 +377,7 @@ def _handle_finished_future_after_fit(
 
     # Successfully received a result from a client
     result: Tuple[ClientProxy, FitRes] = future.result()
-    _, res, recv_timestamp = result
+    _, res = result
 
     # Check result status code
     if res.status.code == Code.OK:
